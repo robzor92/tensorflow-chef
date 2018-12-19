@@ -3,7 +3,7 @@ include_attribute "kagent"
 default['tensorflow']['user']          = node['tensorflow'].attribute?('user') ? node['install']['user'] : node['kagent']['user']
 default['tensorflow']['group']         = node['install']['user'].empty? ? node['kagent']['group'] : node['install']['user']
 
-default["tensorflow"]["version"]       = "1.11.0"
+default["tensorflow"]["version"]       = "1.12.0"
 
 default['tensorflow']['install']       = "dist" # or 'src' or 'custom'
 
