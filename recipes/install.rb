@@ -355,6 +355,14 @@ if node['cuda']['accept_nvidia_download_terms'].eql?("true")
       nvidia-smi -L
     EOH
   end
+
+  template "/etc/modprobe.d/nvidia-kernel-common.conf" do
+    source "nvidia-kernel-common.conf.erb"
+    owner "root"
+    group "root"
+    mode "644"
+    action :create
+  end
 end
 
 

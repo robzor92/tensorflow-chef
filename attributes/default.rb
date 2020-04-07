@@ -5,26 +5,23 @@ default['tensorflow']['user']          = node['tensorflow'].attribute?('user') ?
 default['tensorflow']['group']         = node['install']['user'].empty? ? node['kagent']['group'] : node['install']['user']
 
 # tensorflow and tensorflow-gpu version
-default["tensorflow"]["version"]                 = "1.14.0"
+default["tensorflow"]["version"]                 = "2.2.0"
 
 # tensorflow-rocm version
 default['tensorflow']['rocm']['version']         = "1.14.0"
 
-default['tensorflow']['serving']['version']      = "1.14.0"
+default["tensorflow"]['serving']["version"]      = "2.1.0"
 default['tensorflow']['serving']['url']          = "#{node['download_url']}/serving/tensorflow-model-server_#{node['tensorflow']['serving']['version']}_all.deb"
+default["cudatoolkit"]["version"]                = "10.1"
 
-default["cudatoolkit"]["version"]                = "10.0"
 default["pytorch"]["version"]                    = "1.4.0"
-default["pytorch"]["python2"]["build"]           = "py2.7_cuda10.0.130_cudnn7.6.3_0"
+default["pytorch"]["python2"]["build"]           = "py2.7_cuda10.1.243_cudnn7.6.3_0"
 #pytorch-1.3.1-py3.6_cpu_0
-default["pytorch"]["python3"]["build"]           = "py3.6_cuda10.0.130_cudnn7.6.3_0"
+default["pytorch"]["python3"]["build"]           = "py3.6_cuda10.1.243_cudnn7.6.3_0"
 default["torchvision"]["version"]                = "0.5.0"
 default["matplotlib"]['python2']["version"]      = "2.2.3"
-default["numpy"]["version"]                      = "1.16.5"
 
-#Beam/TFX
 default['pyspark']['version']                    = "2.4.3"
-default['tfx']['version']                        = "0.14.0"
 
 default['tensorflow']['install']       = "dist" # or 'src' or 'custom'
 #Avro dependencies
@@ -52,7 +49,7 @@ default['tensorflow']['home']          = node['tensorflow']['dir'] + "/tensorflo
 default['tensorflow']['base_dir']      = node['tensorflow']['dir'] + "/tensorflow"
 
 # Comma separated list of supported cuda versions (~ # of patches )
-default['cuda']['versions']            = "9.0.176_384.81~2,10.0.130_410.48~1"
+default['cuda']['versions']            = "9.0.176_384.81~2,10.0.130_410.48~1,10.1.243_418.87~0"
 default['cuda']['base_url']            = "#{node['download_url']}/cuda"
 
 default['cuda']['base_dir']                 = "/usr/local"

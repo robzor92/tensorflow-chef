@@ -264,13 +264,6 @@ for python in python_versions
 	      yes | ${CONDA_DIR}/envs/${ENV}/bin/pip install avro-python3==#{node['avro-python3']['version']}
     fi
 
-    # Install hops-apache-beam and tfx
-    yes | ${CONDA_DIR}/envs/${ENV}/bin/pip install tfx==#{node['tfx']['version']}
-    #uninstall apache-beam as it is brought by tfx and then install hops-apache-beam later
-    yes | ${CONDA_DIR}/envs/${ENV}/bin/pip uninstall apache-beam
-    #yes | ${CONDA_DIR}/envs/${ENV}/bin/pip install pyspark==#{node['pyspark']['version']}
-    yes | ${CONDA_DIR}/envs/${ENV}/bin/pip install hops-apache-beam==#{node['conda']['beam']['python']['version']}
-
     yes | ${CONDA_DIR}/envs/${ENV}/bin/pip install --no-cache-dir --upgrade witwidget
     yes | ${CONDA_DIR}/envs/${ENV}/bin/pip uninstall tensorflow
     yes | ${CONDA_DIR}/envs/${ENV}/bin/pip uninstall tensorboard
@@ -301,6 +294,13 @@ for python in python_versions
         yes | ${CONDA_DIR}/envs/${ENV}/bin/pip install tensorflow${TENSORFLOW_LIBRARY_SUFFIX}==#{node['tensorflow']["version"]} --upgrade --force-reinstall
       fi
     fi
+
+    yes | ${CONDA_DIR}/envs/${ENV}/bin/pip install tensorboard-plugin-profile==2.2.0
+
+    replacePattern="/data/plugin/profile"
+    newPath="."
+    sed -i 's|'$replacePattern'|'$newPath'|g' /srv/hops/anaconda/anaconda/envs/${ENV}/lib/python3.6/site-packages/tensorboard_plugin_profile/static/index.html
+    sed -i 's|'$replacePattern'|'$newPath'|g' /srv/hops/anaconda/anaconda/envs/${ENV}/lib/python3.6/site-packages/tensorboard_plugin_profile/static/bundle.js
 
     export HOPS_UTIL_PY_VERSION=#{node['conda']['hops-util-py']['version']}
     export HOPS_UTIL_PY_BRANCH=#{node['conda']['hops-util-py']['branch']}
@@ -347,8 +347,6 @@ for python in python_versions
     yes | ${CONDA_DIR}/envs/${ENV}/bin/pip install --upgrade seaborn
 
     yes | ${CONDA_DIR}/envs/${ENV}/bin/pip install --upgrade pyopenssl
-
-    yes | ${CONDA_DIR}/envs/${ENV}/bin/pip install --upgrade numpy==#{node['numpy']['version']}
 
     EOF
   end
@@ -442,32 +440,6 @@ for python in python_versions
       ${CONDA_DIR}/envs/${ENV}/bin/jupyter serverextension enable --sys-prefix --py jupyterlab_git
     EOF
    end
-  end
-  
-  bash "tfx_tfma_jupyter_extension" do
-    user node['conda']['user']
-    group node['conda']['group']
-    umask "022"
-    retries 1
-    environment ({'HOME' => ::Dir.home(node['conda']['user']),
-                  'USER' => node['conda']['user'],
-                  'CONDA_DIR' => node['conda']['base_dir'],
-                  'HADOOP_HOME' => node['hops']['base_dir'],
-                  #'PATH' => PATH:node['hops']['base_dir']
-                  'ENV' => envName})
-
-    code <<-EOF
-      set -e
-      # Tensorflow-ROCm is currently problematic with Tfx TFMA
-      if [ ! -f /opt/rocm/bin/rocminfo ] && [ #{node['rocm']['install']} != "true" ];
-      then
-            export PATH=$PATH:$HADOOP_HOME/bin
-
-            #Install TensorFlow Extended Model Analysis extension
-            ${CONDA_DIR}/envs/${ENV}/bin/jupyter nbextension install --py --sys-prefix --symlink tensorflow_model_analysis
-            ${CONDA_DIR}/envs/${ENV}/bin/jupyter nbextension enable --py --sys-prefix tensorflow_model_analysis
-      fi
-    EOF
   end
 
   if node['conda']['additional_libs'].empty? == false
